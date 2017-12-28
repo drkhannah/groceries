@@ -1,7 +1,10 @@
-import { Component } from "@angular/core";
+import { Component, ElementRef, OnInit, ViewChild } from "@angular/core";
+import { Router } from "@angular/router";
 import { User } from "../../shared/user/user";
 import { UserService } from "../../shared/user/user.service";
-import { Router } from "@angular/router";
+import { Page } from "tns-core-modules/ui/page";
+import { Color } from "color";
+import { View } from "ui/core/view";
 
 @Component({
   selector: "login",
@@ -9,15 +12,21 @@ import { Router } from "@angular/router";
   templateUrl: "./pages/login/login.html",
   styleUrls: ["./pages/login/login-common.css", "./pages/login/login.css"]
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   user: User;
   isLoggingIn = true;
+  @ViewChild("container") container: ElementRef;
 
-  constructor(private router: Router, private userService: UserService) {
+  constructor(private router: Router, private userService: UserService, private page: Page) {
     this.user = new User();
     this.user.email = "my.test.account@nativescript.org";
     this.user.password = "password";
   }
+  ngOnInit(): void {
+    this.page.actionBarHidden = true;
+    this.page.backgroundImage = "res://bg_login";
+  }
+
   submit() {
     if (this.isLoggingIn) {
       this.login();
@@ -25,6 +34,7 @@ export class LoginComponent {
       this.signUp();
     }
   }
+
   login() {
     this.userService
       .login(this.user)
@@ -33,6 +43,7 @@ export class LoginComponent {
         error => alert("Unfortunately we could not find your account.")
       );
   }
+
   signUp() {
     this.userService.register(this.user).subscribe(
       res => {
@@ -45,7 +56,13 @@ export class LoginComponent {
       }
     );
   }
+
   toggleDisplay() {
     this.isLoggingIn = !this.isLoggingIn;
+    let container = <View>this.container.nativeElement;
+    container.animate({
+      backgroundColor: this.isLoggingIn ? new Color("white") : new Color("#301217"),
+      duration: 200
+    })
   }
 }
