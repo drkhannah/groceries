@@ -17,7 +17,11 @@ export class LoginComponent implements OnInit {
   isLoggingIn = true;
   @ViewChild("container") container: ElementRef;
 
-  constructor(private router: Router, private userService: UserService, private page: Page) {
+  constructor(
+    private router: Router,
+    private userService: UserService,
+    private page: Page
+  ) {
     this.user = new User();
     this.user.email = "my.test.account@nativescript.org";
     this.user.password = "password";
@@ -28,6 +32,11 @@ export class LoginComponent implements OnInit {
   }
 
   submit() {
+    if (!this.user.isValidEmail()) {
+      alert("Enter a valid email address.");
+      return;
+    }
+
     if (this.isLoggingIn) {
       this.login();
     } else {
@@ -61,8 +70,10 @@ export class LoginComponent implements OnInit {
     this.isLoggingIn = !this.isLoggingIn;
     let container = <View>this.container.nativeElement;
     container.animate({
-      backgroundColor: this.isLoggingIn ? new Color("white") : new Color("#301217"),
+      backgroundColor: this.isLoggingIn
+        ? new Color("white")
+        : new Color("#301217"),
       duration: 200
-    })
+    });
   }
 }
